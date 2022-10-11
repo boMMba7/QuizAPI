@@ -71,6 +71,16 @@ quizApp.put('/api/questions/:id', (req, res) => {
 
 });
 
+quizApp.delete('/api/questions/:id', (req, res) => {
+	//check if the question with given id exist
+	const question = questions.find(q => q.id === parseInt(req.params.id));
+	if (!question) return res.status(404).send(`no question with id: ${req.params.id}`);
+
+	const index = questions.indexOf(question);
+	questions.splice(index, 1);
+	res.send(question);
+});
+
 function validateQuestion(question) {
 	
 	//items are string, minimocharacter 1 answer is mandatory
