@@ -31,7 +31,7 @@ quizApp.get('/api/questions', (req, res) => {
 //get the specific category
 quizApp.get('/api/questions/:category', (req, res) => {
 	// check if category exist, if not return imediatly
-	const result = questions.filter(question => question.category === req.params.category);
+	const result = questions.filter(q => q.category === req.params.category);
 	if(result.length === 0) return res.status(404).send('no question with this category');
 	
 	res.send(result);
@@ -51,6 +51,24 @@ quizApp.post('/api/questions', (req, res) => {
 	};
 	questions.push(question);
 	res.send(question);
+});
+
+//updating a question with specific id
+quizApp.put('/api/questions/:id', (req, res) => {
+	//check if the question with given id exist
+	const question = questions.find(q => q.id === parseInt(req.params.id));
+	if (!question) return res.status(404).send(`no question with id: ${req.params.id}`);
+	//check if question is valid
+	const { error } = validateQuestion(req.body);
+	if (error) return res.status(400).send(error.details[0].message);
+
+	// one by one to don't change the id
+	question.category = req.body.category;
+	question.question = req.body.question;
+	question.answer = req.body.answer;
+
+	res.send(question);
+
 });
 
 function validateQuestion(question) {
